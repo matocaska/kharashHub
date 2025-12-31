@@ -7,7 +7,7 @@ import Input from '../components/Input'
 function Signup() {
     const [formData, setFormData] = useState({
         name: '',
-        email: '',
+        email: localStorage.getItem('remember_email') || '',
         password: '',
         confirmPassword: ''
     })
@@ -22,6 +22,12 @@ function Signup() {
             ...prev,
             [name]: value
         }))
+
+        // Persist email
+        if (name === 'email') {
+            localStorage.setItem('remember_email', value)
+        }
+
         if (error) setError('')
     }
 

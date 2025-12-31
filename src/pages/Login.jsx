@@ -6,7 +6,7 @@ import Input from '../components/Input'
 
 function Login() {
     const [formData, setFormData] = useState({
-        email: '',
+        email: localStorage.getItem('remember_email') || '',
         password: ''
     })
     const [error, setError] = useState('')
@@ -20,6 +20,12 @@ function Login() {
             ...prev,
             [name]: value
         }))
+
+        // Persist email
+        if (name === 'email') {
+            localStorage.setItem('remember_email', value)
+        }
+
         // Clear error when user types
         if (error) setError('')
     }
@@ -96,7 +102,7 @@ function Login() {
                                 />
                                 <div className="flex justify-end mt-1">
                                     <Link
-                                        to="#"
+                                        to="/forgot-password"
                                         className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
                                     >
                                         Forgot password?
