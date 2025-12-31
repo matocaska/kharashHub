@@ -77,14 +77,14 @@ export const BudgetProvider = ({ children }) => {
 
     const updateCategory = (oldName, newName, color, icon) => {
         const newCategories = { ...categories }
+        let newCategoryBudgets = { ...categoryBudgets }
 
         // If name changed, delete old and add new
         if (oldName !== newName) {
             delete newCategories[oldName]
             newCategories[newName] = { icon, color }
 
-            // Also need to migrate budgets for this category
-            const newCategoryBudgets = { ...categoryBudgets }
+            // Also migrate budgets for this category
             if (newCategoryBudgets[oldName]) {
                 newCategoryBudgets[newName] = newCategoryBudgets[oldName]
                 delete newCategoryBudgets[oldName]
@@ -95,8 +95,7 @@ export const BudgetProvider = ({ children }) => {
         }
 
         setCategories(newCategories)
-        // Note: We might want to migrate transactions too, but for MVP we might skip or handle it
-        saveBudgetData(monthlyBudget, categoryBudgets, savingsGoal, newCategories)
+        saveBudgetData(monthlyBudget, newCategoryBudgets, savingsGoal, newCategories)
     }
 
     const deleteCategory = (name) => {

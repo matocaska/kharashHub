@@ -55,6 +55,13 @@ export const TransactionProvider = ({ children }) => {
         saveTransactions(updatedTransactions)
     }
 
+    const bulkUpdateCategory = (oldCategory, newCategory) => {
+        const updatedTransactions = transactions.map(t =>
+            t.category === oldCategory ? { ...t, category: newCategory } : t
+        )
+        saveTransactions(updatedTransactions)
+    }
+
     const getTransactionsByType = (type) => {
         return transactions.filter(t => t.type === type)
     }
@@ -124,6 +131,7 @@ export const TransactionProvider = ({ children }) => {
             addTransaction,
             updateTransaction,
             deleteTransaction,
+            bulkUpdateCategory,
             getTransactionsByType,
             getTransactionsByCategory,
             getTransactionsByDateRange,

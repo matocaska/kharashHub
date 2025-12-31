@@ -17,7 +17,7 @@ function Budget() {
         getBudgetUsagePercentage,
         getCategoryBudgetUsage
     } = useBudget()
-    const { getCategoryTotals, getTotalExpenses } = useTransactions()
+    const { getCategoryTotals, getTotalExpenses, bulkUpdateCategory } = useTransactions()
 
     const [isEditingTotal, setIsEditingTotal] = useState(false)
     const [tempTotalBudget, setTempTotalBudget] = useState(monthlyBudget)
@@ -100,6 +100,10 @@ function Budget() {
         } else {
             // mode === 'edit'
             updateCategory(categoryForm.oldName, name, categoryForm.color, categories[categoryForm.oldName]?.icon || 'Circle')
+            // Sync transactions if name changed
+            if (name !== categoryForm.oldName) {
+                bulkUpdateCategory(categoryForm.oldName, name)
+            }
         }
 
         setCategoryForm(prev => ({ ...prev, isOpen: false }))
@@ -180,10 +184,23 @@ function Budget() {
 
                             <button
                                 type="submit"
-                                className="w-full py-2.5 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors"
+                                className="w-full py-2.5 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors shadow-lg shadow-primary-600/20"
                             >
                                 {categoryForm.mode === 'add' ? 'Create Category' : 'Save Changes'}
                             </button>
+
+                            {categoryForm.mode === 'edit' && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        handleDeleteCategory(categoryForm.oldName)
+                                        setCategoryForm(prev => ({ ...prev, isOpen: false }))
+                                    }}
+                                    className="w-full py-2.5 text-danger hover:bg-danger-light/10 rounded-xl font-medium transition-colors border border-transparent hover:border-danger/20"
+                                >
+                                    Delete Category
+                                </button>
+                            )}
                         </form>
                     </div>
                 </div>
@@ -279,7 +296,7 @@ function Budget() {
                     const isWarning = usage > 80 && !isOverBudget
 
                     return (
-                        <div key={category} className="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700/50 hover:shadow-md transition-shadow">
+                        <div key={category} className="group bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700/50 hover:shadow-md transition-shadow relative">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex items-center gap-3">
                                     <div
@@ -294,10 +311,10 @@ function Budget() {
                                             <h3 className="font-semibold text-slate-900 dark:text-white">{category}</h3>
                                             <button
                                                 onClick={() => openEditCategory(category, config.color)}
-                                                className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-primary-600 transition-all"
+                                                className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-primary-600 transition-all focus:opacity-100"
                                                 title="Edit Category Details"
                                             >
-                                                <Edit2 className="w-3 h-3" />
+                                                <Edit2 className="w-3.5 h-3.5" />
                                             </button>
                                         </div>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
